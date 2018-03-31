@@ -9,18 +9,17 @@ import tflearn
 
 # Building Residual Network	
 
+# 25%
 net = tflearn.input_data(shape=[None, 4000])
-net = tflearn.fully_connected(net, 1418, activation='relu')
-net = tflearn.dropout(net, 0.4)
-net = tflearn.fully_connected(net, 708, activation='relu')
-net = tflearn.dropout(net, 0.5)
-net = tflearn.fully_connected(net, 14, activation='softmax')
+net = tflearn.fully_connected(net, 941, activation='CReLU')
+net = tflearn.fully_connected(net, 196, activation='CReLU')
+net = tflearn.fully_connected(net, 14, activation='Softmax')
 net = tflearn.regression(net, optimizer='momentum', loss='categorical_crossentropy', learning_rate=0.2)
 
 # Evaluate model
 
 model = tflearn.DNN(net)
-model.fit(X, Y, n_epoch=20, validation_set=(X_test, Y_test), show_metric=True)
+model.fit(X, Y, n_epoch=75, validation_set=(X_test, Y_test), show_metric=True)
 
 # Run the model on one example
 
