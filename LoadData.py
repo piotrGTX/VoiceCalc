@@ -1,14 +1,15 @@
 import soundfile as sf
+import numpy
 import glob
 
-def loadData(rootPath):
+def loadData(rootPath, symbols=[0,1,2,3,4,5,6,7,8,9,'plus','minus','razy','przez']):
 	data = []
 	labels = []
+	paths = []
 	MAX = 4000
-	SYMBOLS = [0,1,2,3,4,5,6,7,8,9,'plus','minus','razy','przez']
 
 	EMPTY_INPUT = [0]*14
-	for x in SYMBOLS:
+	for x in symbols:
 		for path in glob.glob(rootPath + "/" + str(x) + "/outSilent/*.wav"):
 			d, sample = sf.read(path)
 			if len(d) >= MAX:
@@ -26,4 +27,9 @@ def loadData(rootPath):
 					tab[13] = 1
 				data.append(d)
 				labels.append(tab)
-	return data, labels
+				paths.append(path)
+	
+	data = numpy.fft.rfft(data)
+	labels = numpy.array(labels)
+
+	return data, labels, paths

@@ -1,42 +1,28 @@
-import sys;
-
 from LoadData import loadData
 
-X, Y = loadData("./Train")
-X_test, Y_test = loadData("./Test")
+X, Y, _ = loadData("./Train")
+X_test, Y_test, _ = loadData("./Test")
 
 import tflearn
+import os
+
+os.environ['TF_CPP_MIN_LOG_LEVEL'] = '3' 
 
 # Building Residual Network	
 
-# 25%
-net = tflearn.input_data(shape=[None, 4000])
-net = tflearn.fully_connected(net, 941, activation='CReLU')
-net = tflearn.fully_connected(net, 196, activation='CReLU')
-net = tflearn.fully_connected(net, 14, activation='Softmax')
-net = tflearn.regression(net, optimizer='momentum', loss='categorical_crossentropy', learning_rate=0.2)
+# # 25%
+net = tflearn.input_data(shape=[None, 2001])	
+net = tflearn.fully_connected(net, 256, activation='crelu')
+net = tflearn.dropout(net, 0.5)
+net = tflearn.fully_connected(net, 64, activation='crelu')
+net = tflearn.dropout(net, 0.7)
+net = tflearn.fully_connected(net, 14, activation='softmax')
 
+proxi_adagrad = tflearn.ProximalAdaGrad(learning_rate=0.015, initial_accumulator_value=0.001)
+net = tflearn.regression(net, optimizer=proxi_adagrad)
+	
 # Evaluate model
 
 model = tflearn.DNN(net)
-model.fit(X, Y, n_epoch=75, validation_set=(X_test, Y_test), show_metric=True)
-
-# Run the model on one example
-
-# def getAnswer(data):
-# 	tab = dict(zip([0, 1, 2, 3, 4, 5, 6, 7, 8, 9, '+', '-', '*', '/'], data))
-# 	return sorted(tab.items(), reverse=True, key=lambda y: y[1])
-
-# while True:
-# 	try:
-# 		path = input("Ścieżka: ");
-# 		example, _ = sf.read(path)
-
-# 		if len(example) >= MAX:
-# 			example = example[:MAX]
-# 			# Run the model on one example
-# 			prediction = model.predict([example])
-# 			results = getAnswer(prediction[0])
-# 			print('Wykryto: ' + str(results[:2]))
-# 	except:
-# 		print("Powtórz")
+model.fit(X, Y, n_epoch=12, validation_set=(X_test, Y_test), show_metric=True)
+#model.fit(X, Y, n_epoch=12, validation_set=0.05, show_metric=True)
