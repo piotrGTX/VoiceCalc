@@ -8,21 +8,23 @@ import os
 
 os.environ['TF_CPP_MIN_LOG_LEVEL'] = '3' 
 
+print(X.shape)
+
 # Building Residual Network	
 
-# # 25%
-net = tflearn.input_data(shape=[None, 2001])	
-net = tflearn.fully_connected(net, 128, activation='crelu')
-net = tflearn.dropout(net, 0.5)
-net = tflearn.fully_connected(net, 64, activation='crelu')
+# # 88%
+net = tflearn.input_data(shape=[None, 401, 11])
+net = tflearn.max_pool_1d(net, 5)
 net = tflearn.dropout(net, 0.7)
+net = tflearn.fully_connected(net, 64, activation='relu')
 net = tflearn.fully_connected(net, 14, activation='softmax')
 
-proxi_adagrad = tflearn.ProximalAdaGrad(learning_rate=0.001, initial_accumulator_value=0.001)
-net = tflearn.regression(net, optimizer=proxi_adagrad)
+net = tflearn.regression(net, optimizer='adam', loss='categorical_crossentropy', learning_rate=0.01)
 	
-# Evaluate model
+# Train model
 
 model = tflearn.DNN(net)
-model.fit(X, Y, n_epoch=12, batch_size=25, validation_set=(X_test, Y_test), show_metric=True)
-#model.fit(X, Y, n_epoch=12, validation_set=0.05, show_metric=True)
+model.fit(X, Y, n_epoch=20, validation_set=(X_test, Y_test), show_metric=True)
+# model.fit(X, Y, n_epoch=12, validation_set=0.08, show_metric=True)
+
+model.save('models/my_model.tflearn')
