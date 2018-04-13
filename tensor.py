@@ -17,6 +17,8 @@ net = tflearn.conv_1d(net, 24, 4, activation='crelu')
 net = tflearn.dropout(net, 0.6)
 net = tflearn.fully_connected(net, 96, activation='relu')
 net = tflearn.dropout(net, 0.6)
+net = tflearn.fully_connected(net, 32, activation='relu')
+net = tflearn.dropout(net, 0.8)
 net = tflearn.fully_connected(net, 14, activation='softmax')
 
 net = tflearn.regression(net, optimizer='adam', loss='categorical_crossentropy', learning_rate=0.01)
