@@ -1,7 +1,7 @@
 from LoadData import loadData
 
-X, Y, _ = loadData("./Train")
-X_test, Y_test, _ = loadData("./Test")
+X, Y = loadData("./Train")
+X_test, Y_test = loadData("./Test")
 
 import tflearn
 import os
@@ -10,10 +10,11 @@ os.environ['TF_CPP_MIN_LOG_LEVEL'] = '2'
 
 # Building Residual Network	
 
-# # 93%
+# # 92%
 net = tflearn.input_data(shape=[None, 401, 11])
-net = tflearn.max_pool_1d(net, 5)
-net = tflearn.max_pool_1d(net, 4)
+net = tflearn.max_pool_1d(net, 6)
+net = tflearn.conv_1d(net, 24, 4, activation='crelu')
+net = tflearn.dropout(net, 0.6)
 net = tflearn.fully_connected(net, 96, activation='relu')
 net = tflearn.dropout(net, 0.6)
 net = tflearn.fully_connected(net, 14, activation='softmax')

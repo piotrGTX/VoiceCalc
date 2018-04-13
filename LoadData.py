@@ -6,12 +6,11 @@ from scipy import signal
 def loadData(rootPath, symbols=[0,1,2,3,4,5,6,7,8,9,'plus','minus','razy','przez']):
 	data = []
 	labels = []
-	paths = []
 	MAX = 4000
 
 	EMPTY_INPUT = [0]*14
 	for x in symbols:
-		for path in glob.glob(rootPath + "/" + str(x) + "/outSilent/*.wav"):
+		for path in glob.glob(f"{rootPath}/{x}/outSilent/*.wav"):
 			d, sample = sf.read(path)
 			if len(d) >= MAX:
 				d = d[:MAX]
@@ -28,17 +27,20 @@ def loadData(rootPath, symbols=[0,1,2,3,4,5,6,7,8,9,'plus','minus','razy','przez
 					tab[13] = 1
 
 				_, _, d = signal.stft(d, 8000, nperseg=800) 
+				d = numpy.abs(d)
 
 				data.append(d)
 				labels.append(tab)
-				paths.append(path)
 	
+	# Zamiana listy na numpy
 	data = numpy.array(data)
 	labels = numpy.array(labels)
 
+	# Mieszanie danych
 	randomize = numpy.arange(len(data))
 	numpy.random.shuffle(randomize)
 	data = data[randomize]
 	labels = labels[randomize]
 
-	return data, labels, paths
+	return data, labels
+
