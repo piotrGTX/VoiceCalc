@@ -11,35 +11,30 @@ DIR_PATH = 'E:\Projekty\AI\Train'
 OUT_DIR_NAME = 'out'
 # Nazwy folderów do przeszukania
 ALL_SYMBOLS = ['0','1','2','3','4','5','6','7','8','9','plus','minus','razy','przez']
+LENGTH = int(0.5 * 8000)
 
-def cutSounds(r, limit=0.07):
+def cutSounds(r, limit):
 	answers = []
 
-	i = 0
-	while i < (len(r) - 4000):
+	i = 100
+	while i < (len(r) - LENGTH):
 		element = r[i]
 		if element > limit:
 			# Plik oryginalny
-			this_answer = r[i : i + 4000]
+			this_answer = r[i : i + LENGTH]
 			answers.append(this_answer)
 
-			# # Cicha wersja
-			# answers.append(this_answer * random.uniform(0.5, 0.2))
-
-			# # Głośna wersja
-			# answers.append(this_answer * random.uniform(1.5, 1.8))
-
-			# 100 ms przerwy między nagraniami
-			i = i + 4000 + 100 # Przerwa conajmniej 100 ms między słowami
+			i = i + LENGTH + 200 # Przerwa conajmniej 200 ms między słowami
 		i = i + 1
 	return answers
 
 def cutFromFile(path):
-	# Utworzenie nowego kanalogu i wytłumienie outputu jeśli katalog istnieje
 	d, _ = sf.read(path)
-	return cutSounds(d)
+	d= cutSounds(d, limit=0.12) + cutSounds(d, limit=0.22)
+	return d
 
 def cutAllInFolder(x):
+	# Utworzenie nowego kanalogu i wytłumienie outputu jeśli katalog istnieje
 	os.system(f"mkdir {DIR_PATH}\{x}\{OUT_DIR_NAME} 2> NUL")
 	count = 0
 	for path in glob.glob(f"{DIR_PATH}\{x}\*.wav"):
@@ -53,8 +48,8 @@ def cutAllInFolder(x):
 	print(f"{count} plików z symbolem {x}")
 
 def cutAllFiles():
-	executor = ThreadPoolExecutor(4)
+	executor = ThreadPoolExecutor(3)
 	for x in ALL_SYMBOLS:
 		executor.submit(cutAllInFolder, x)
 
-# cutAllFiles()
+cutAllFiles()

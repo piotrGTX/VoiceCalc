@@ -3,12 +3,16 @@ import numpy
 import glob
 from scipy import signal
 
-def loadData(rootPath, symbols=[0,1,2,3,4,5,6,7,8,9,'plus','minus','razy','przez']):
+def loadData(rootPath, symbols=[0,1,2,3,4,5,6,7,8,9,'plus','minus','razy','przez'], spectrogram_step=50):
 	data = []
 	labels = []
-	MAX = 4000
-
 	EMPTY_INPUT = [0]*14
+
+	# Częstotliwość
+	FREQUENCY = 8000
+	# Długość nagrania
+	MAX = int(0.5 * FREQUENCY)
+	
 	for x in symbols:
 		for path in glob.glob(f"{rootPath}/{x}/out/*.wav"):
 			d, sample = sf.read(path)
@@ -26,7 +30,9 @@ def loadData(rootPath, symbols=[0,1,2,3,4,5,6,7,8,9,'plus','minus','razy','przez
 				else:
 					tab[13] = 1
 
-				_, _, d = signal.stft(d, 8000, nperseg=800) 
+				# 1600 nperseg = 100 ms
+				# 800 nperseg = 50 ms
+				_, _, d = signal.stft(d, FREQUENCY, nperseg=(16*spectrogram_step)) 
 				d = numpy.abs(d)
 
 				data.append(d)
