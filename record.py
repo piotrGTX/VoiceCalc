@@ -22,10 +22,12 @@ net = tflearn.input_data(shape=[None, 401, 11])
 
 net = tflearn.max_pool_1d(net, 4)
 net = tflearn.conv_1d(net, 128, 6, activation='relu')
+net = tflearn.dropout(net, 0.8)
+net = tflearn.conv_1d(net, 128, 4, activation='relu')
 net = tflearn.avg_pool_1d(net, 2)
 
 net = tflearn.fully_connected(net, 256, activation='relu')
-net = tflearn.dropout(net, 0.8)
+net = tflearn.dropout(net, 0.7)
 net = tflearn.fully_connected(net, 128, activation='relu')
 net = tflearn.dropout(net, 0.9)
 
