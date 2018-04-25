@@ -18,55 +18,54 @@ def recordSymbols(duration=5):
 SYMBOLS = ['0','1','2','3','4','5','6','7','8','9','+','-','*','/']
 
 # # 95%
-net = tflearn.input_data(shape=[None, 401, 11])
+net = tflearn.input_data(shape=[None, 121, 35])
 
 net = tflearn.max_pool_1d(net, 4)
 net = tflearn.conv_1d(net, 128, 6, activation='relu')
-net = tflearn.dropout(net, 0.8)
-net = tflearn.conv_1d(net, 128, 4, activation='relu')
+net = tflearn.max_pool_1d(net, 2)
+net = tflearn.conv_1d(net, 128, 3, activation='relu')
 net = tflearn.avg_pool_1d(net, 2)
 
-net = tflearn.fully_connected(net, 256, activation='relu')
-net = tflearn.dropout(net, 0.7)
 net = tflearn.fully_connected(net, 128, activation='relu')
-net = tflearn.dropout(net, 0.9)
+net = tflearn.dropout(net, 0.7)
 
 net = tflearn.fully_connected(net, 14, activation='softmax')
 
 net = tflearn.regression(net, optimizer='adam', loss='categorical_crossentropy', learning_rate=0.005)
 	
-# Evaluate model
+# Train model
 
 model = tflearn.DNN(net)
-model.load('models/my_model.tflearn')
+model.load('models/my_model1.tflearn')
 
 C = 5
 
 def cutSounds(r, limit):
 	answers = []
 	i = 0
-	while i < (len(r) - 4000 - C):
+	while i < (len(r) - 4000 - 15*C):
 		element = r[i]
 		if element > limit:
 			for y in range(C):
-				this_answer = r[i + y : i + 4000 + y]
+				this_answer = r[i + 15*y : i + 4000 + 15*y]
 
 				answers.append(this_answer)
 
 			# 100 ms przerwy między nagraniami
-			i = i + 4000 + 100 # Przerwa conajmniej 100 ms między słowami
+			i = i + 4000 + 50 # Przerwa conajmniej 50 ms między słowami
 		i = i + 1
 	return answers
 
 def whatIsIt(sound):
-	_, _, sound = signal.stft(sound, 8000, nperseg=800) 
+	
+	_, _, sound = signal.stft(sound, 8000, nperseg=(16*15)) # Spectrogram co 15 ms
 	X = model.predict([sound]).tolist()[0]
 	return SYMBOLS[X.index(max(X))]
 
 while True:
 	input("Wcisnij Enter !")
 	rs = recordSymbols()
-	rs = cutSounds(rs, limit=0.22)
+	rs = cutSounds(rs, limit=0.14)
 
 	line = ''
 	X_ARR = []
@@ -85,7 +84,6 @@ while True:
 			line += new_char
 			X_ARR = []
 
-	answer = ''
 	try:
 		answer = eval(line)
 	except:

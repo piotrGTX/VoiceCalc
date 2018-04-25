@@ -15,7 +15,7 @@ def loadData(rootPath, symbols=[0,1,2,3,4,5,6,7,8,9,'plus','minus','razy','przez
 	
 	for x in symbols:
 		for path in glob.glob(f"{rootPath}/{x}/out/*.wav"):
-			d, sample = sf.read(path)
+			d, _ = sf.read(path)
 			if len(d) >= MAX:
 				d = d[:MAX]
 				tab = list(EMPTY_INPUT)

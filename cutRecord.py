@@ -30,7 +30,7 @@ def cutSounds(r, limit):
 
 def cutFromFile(path):
 	d, _ = sf.read(path)
-	d= cutSounds(d, limit=0.12) + cutSounds(d, limit=0.22)
+	d = cutSounds(d, limit=0.12) + cutSounds(d, limit=0.22)
 	return d
 
 def cutAllInFolder(x):
@@ -52,4 +52,11 @@ def cutAllFiles():
 	for x in ALL_SYMBOLS:
 		executor.submit(cutAllInFolder, x)
 
-cutAllFiles()
+
+# cutAllFiles()
+rs = cutFromFile('E:\\Projekty\\AI\\Train\\3\\3d.wav')
+i = 0
+random_name = str(uuid.uuid4().hex)
+for r in rs:
+	i = i+1
+	sf.write(f"{DIR_PATH}\\3\\{OUT_DIR_NAME}\{random_name}{i}.wav", r, 8000)
