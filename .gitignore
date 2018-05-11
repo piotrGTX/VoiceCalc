@@ -1,4 +1,5 @@
 *.*
+*/*
 !tensor.py
 !LoadData.py
 !cutRecord.py
